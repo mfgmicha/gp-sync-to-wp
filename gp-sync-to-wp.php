@@ -36,3 +36,19 @@ function gp_sync_to_wp_uninstall() {
   error_log( 'Plugin GP sync to WP uninstalled.' );
 }
 register_uninstall_hook( __FILE__, 'gp_sync_to_wp_uninstall' );
+
+class GP_Sync_To_WP {
+
+  public function __construct() {
+
+  }
+}
+
+/**
+ * Plugin - setup
+ */
+function gp_sync_to_wp_init() {
+  GLOBAL gp_sync_to_wp;
+  gp_sync_to_wp = new GP_Sync_To_WP();
+}
+add_action( 'gp_init', 'gp_sync_to_wp_init' );
