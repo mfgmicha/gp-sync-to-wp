@@ -10,6 +10,7 @@ License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  gp-sync-to-wp
 Domain Path:  /languages
+Tags: glotpress, glotpress plugin, translate, i18n
 */
 
 /**
