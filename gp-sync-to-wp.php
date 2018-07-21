@@ -43,6 +43,7 @@ register_uninstall_hook( __FILE__, 'gp_sync_to_wp_uninstall' );
 class GP_Sync_To_WP {
 
   public function __construct() {
+    add_filter( 'gp_export_translations_filename', array( $this, 'get_export_filename' ), 99, 5 );
   }
 
   public function project_settings_add() {
@@ -56,6 +57,25 @@ class GP_Sync_To_WP {
 
   public function export() {
     //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
+  }
+
+  /**
+   * get the filename for export
+   */
+  public function get_export_filename( $filename, $format, $locale, $project, $translation_set ) {
+
+    //TODO: check setting - save to project (#4)
+    $save_to_project = false;
+
+    if ( $save_to_project ) {
+      // save to project language folder - name: (locale)
+      $filename = $locale->wp_locale;
+    } else {
+      // save to wordpress language folder - name: (project_name)-(locale)
+      $filename = sprintf( '%1s-%2s', $project->slug, $locale->wp_locale );
+    }
+
+    return sprintf( '%1s.%2s', $filename, $format->extension );
   }
 }
 
