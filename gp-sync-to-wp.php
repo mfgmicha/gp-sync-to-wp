@@ -37,10 +37,25 @@ function gp_sync_to_wp_uninstall() {
 }
 register_uninstall_hook( __FILE__, 'gp_sync_to_wp_uninstall' );
 
+/**
+ * Plugin class
+ */
 class GP_Sync_To_WP {
 
   public function __construct() {
+  }
 
+  public function project_settings_add() {
+    //TODO: add project settings - project type (#1)
+    //TODO: add project settings - save to project? (#4)
+  }
+
+  public function import_originals() {
+    //TODO: import originals from pot file (#2)
+  }
+
+  public function export() {
+    //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
   }
 }
 
