@@ -63,7 +63,7 @@ class GP_Sync_To_WP {
  * Plugin - setup
  */
 function gp_sync_to_wp_init() {
-  GLOBAL gp_sync_to_wp;
-  gp_sync_to_wp = new GP_Sync_To_WP();
+  GLOBAL $gp_sync_to_wp;
+  $gp_sync_to_wp = new GP_Sync_To_WP();
 }
 add_action( 'gp_init', 'gp_sync_to_wp_init' );
