@@ -44,6 +44,11 @@ class GP_Sync_To_WP {
 
   public function __construct() {
     add_filter( 'gp_export_translations_filename', array( $this, 'get_export_filename' ), 99, 5 );
+    add_filter( 'gp_project_actions', array( $this, 'project_actions_add' ), 10, 2 );
+
+    // add routes
+    GP::$router->add( '/gp-sync-to-wp-import/(.+?)', array( $this, 'import_originals' ), 'get' );
+    GP::$router->add( '/gp-sync-to-wp-export/(.+?)', array( $this, 'export_translations' ), 'get' );
   }
 
   public function project_settings_add() {
@@ -51,12 +56,54 @@ class GP_Sync_To_WP {
     //TODO: add project settings - save to project? (#4)
   }
 
-  public function import_originals() {
-    //TODO: import originals from pot file (#2)
+  public function project_actions_add( $actions, $project ) {
+
+    $actions[] = gp_link_get( gp_url( 'gp-sync-to-wp-import/' . $project->slug ), __( '[Sync WP] Import Strings', 'glotpress' ) );
+    $actions[] = gp_link_get( gp_url( 'gp-sync-to-wp-export/' . $project->slug ), __( '[Sync WP] Export translations', 'glotpress' ) );
+
+    return $actions;
   }
 
-  public function export() {
+  // empty requests or error
+  public function before_request() {}
+  public function after_request() {}
+
+  public function import_originals( $project_path ) {
+
+    // The project path is url encoded, so decode before we do anything with it.
+    $project_path = urldecode( $project_path );
+
+    // Create a project class to use to get the project object.
+    $project_class = new GP_Project;
+
+    // Get the project object from the project path that was passed in.
+    $project = $project_class->by_path( $project_path );
+
+    //TODO: import strings base file (.pot) from project folder (theme / plugin)
+    error_log( 'sync wp - import ' . $project->slug );
+
+    // redirect to project
+    $route = new GP_Route;
+    $route->redirect( gp_url_project( $project ) );
+  }
+
+  public function export_translations( $project_path ) {
+
+    // The project path is url encoded, so decode before we do anything with it.
+    $project_path = urldecode( $project_path );
+
+    // Create a project class to use to get the project object.
+    $project_class = new GP_Project;
+
+    // Get the project object from the project path that was passed in.
+    $project = $project_class->by_path( $project_path );
+
     //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
+    error_log( 'sync wp - export ' . $project->slug );
+
+    // redirect to project
+    $route = new GP_Route;
+    $route->redirect( gp_url_project( $project ) );
   }
 
   /**
