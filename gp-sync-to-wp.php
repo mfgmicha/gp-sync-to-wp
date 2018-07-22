@@ -64,10 +64,21 @@ class GP_Sync_To_WP {
     return $actions;
   }
 
-  // empty requests or error
-  public function before_request() {}
-  public function after_request() {}
+  /**
+   * empty requests or error
+   */
+  public function before_request() {
+  }
 
+  /**
+   * empty requests or error
+   */
+  public function after_request() {
+  }
+
+  /**
+   * import strings from pot file
+   */
   public function import_originals( $project_path ) {
 
     // The project path is url encoded, so decode before we do anything with it.
