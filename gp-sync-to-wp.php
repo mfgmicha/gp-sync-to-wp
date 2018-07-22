@@ -42,7 +42,27 @@ register_uninstall_hook( __FILE__, 'gp_sync_to_wp_uninstall' );
  */
 class GP_Sync_To_WP {
 
+  /**
+   * @var bool
+   */
+  private $save_to_project;
+
+  /**
+   * @var string
+   */
+  private $project_type;
+
+  /**
+   * @var array
+   */
+  private $export_formats;
+
   public function __construct() {
+
+    $this->save_to_project = true;
+    $this->project_type = 'plugin';
+    $this->export_formats = array( 'po', 'mo' );
+
     add_filter( 'gp_export_translations_filename', array( $this, 'get_export_filename' ), 99, 5 );
     add_filter( 'gp_project_actions', array( $this, 'project_actions_add' ), 10, 2 );
 
@@ -74,6 +94,18 @@ class GP_Sync_To_WP {
    * empty requests or error
    */
   public function after_request() {
+  }
+
+  private function get_save_to_project() {
+    return $this->save_to_project;
+  }
+
+  private function get_project_type() {
+    return $this->project_type;
+  }
+
+  private function get_export_formats() {
+    return $this->export_formats;
   }
 
   /**
@@ -109,12 +141,41 @@ class GP_Sync_To_WP {
     // Get the project object from the project path that was passed in.
     $project = $project_class->by_path( $project_path );
 
-    //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
-    error_log( 'sync wp - export ' . $project->slug );
+    // get route for redirect
+    $route = new GP_Route;
+
+    if ( $project ) {
+
+      $export_formats = array(
+         'po',
+         'mo'
+      );
+
+      // Get the translations sets from the project ID.
+      $translation_sets = GP::$translation_set->by_project_id( $project->id );
+
+      // Setup an array to use to track the file names we're creating.
+      $files = array();
+
+      // Loop through all the sets.
+      foreach( $translation_sets as $set ) {
+              // Loop through all the formats we're exporting
+              foreach( $include_formats as $format ) {
+                      // Export the PO file for this translation set.
+                      $files[] .= $this->_export_to_file( $format, $path, $project, $set->locale, $set );
+              }
+      }
+
+      //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
+      error_log( 'sync wp - export ' . $project->slug );
+
+      // redirect to project
+      $route->redirect( gp_url_project( $project ) );
+      return;
+    }
 
     // redirect to project
-    $route = new GP_Route;
-    $route->redirect( gp_url_project( $project ) );
+    $route->redirect( gp_url_project() );
   }
 
   /**
@@ -123,7 +184,7 @@ class GP_Sync_To_WP {
   public function get_export_filename( $filename, $format, $locale, $project, $translation_set ) {
 
     //TODO: check setting - save to project (#4)
-    $save_to_project = false;
+    $save_to_project = $this->get_save_to_project();
 
     if ( $save_to_project ) {
       // save to project language folder - name: (locale)
