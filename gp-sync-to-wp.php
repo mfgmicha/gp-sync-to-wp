@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name:  GP sync to WP
+Plugin Name:  GP Sync To WP
 Plugin URI:   https://michakrapp.com
 Description:  GlotPress plugin to sync translations to the WordPress site it is installed on
 Version:      0.0.1
