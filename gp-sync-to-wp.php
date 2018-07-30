@@ -177,6 +177,9 @@ class GP_Sync_To_WP {
     $route->redirect( gp_url_project( $project ) );
   }
 
+  /**
+   * export strings to files
+   */
   public function export_translations( $project_path ) {
 
     // The project path is url encoded, so decode before we do anything with it.
