@@ -117,6 +117,42 @@ class GP_Sync_To_WP {
     return sprintf( '%1s.%2s', $filename, $format->extension );
   }
 
+  /**
+   * get the path for export
+   */
+  private function get_export_path( $project ) {
+
+    if ( $this->save_to_project ) {
+
+      switch ( $this->project_type ) {
+        case 'plugin':
+          $path = trailingslashit( WP_PLUGIN_DIR ) . $project->slug . '/' . 'languages/';
+          break;
+
+        case 'theme':
+          $path = trailingslashit( WP_CONTENT_DIR ) . 'themes/' . $project->slug . '/languages/';
+          break;
+
+        default:
+          // code...
+          break;
+      }
+    } else {
+
+      switch ( $this->project_type ) {
+        case 'plugin':
+          $path = trailingslashit( WP_CONTENT_DIR ) . 'languages/plugins/';
+          break;
+
+        case 'theme':
+          $path = trailingslashit( WP_CONTENT_DIR ) . 'languages/themes/';
+          break;
+
+        default:
+          // code...
+          break;
+      }
+    }
   }
 
   /**
