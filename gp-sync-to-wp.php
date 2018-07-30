@@ -96,7 +96,25 @@ class GP_Sync_To_WP {
   public function after_request() {
   }
 
+  /**
+   * get the filename for export
+   */
+  public function get_export_filename( $filename, $format, $locale, $project, $translation_set ) {
 
+    error_log( print_r( $locale, true ) );
+
+    // get setting - save to project?
+    if ( $this->save_to_project ) {
+
+      //TODO: save to project language folder - name: (locale)
+      $filename = $locale; //->wp_locale;
+    } else {
+
+      // save to wordpress language folder - name: (project_name)-(locale)
+      $filename = sprintf( '%1s-%2s', $project->slug, $locale->wp_locale );
+    }
+
+    return sprintf( '%1s.%2s', $filename, $format->extension );
   }
 
   }
