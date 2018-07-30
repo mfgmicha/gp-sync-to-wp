@@ -59,7 +59,7 @@ class GP_Sync_To_WP {
 
   public function __construct() {
 
-    $this->save_to_project = true;
+    $this->save_to_project = false;
     $this->project_type = 'plugin';
     $this->export_formats = array( 'po', 'mo' );
 
@@ -96,16 +96,9 @@ class GP_Sync_To_WP {
   public function after_request() {
   }
 
-  private function get_save_to_project() {
-    return $this->save_to_project;
+
   }
 
-  private function get_project_type() {
-    return $this->project_type;
-  }
-
-  private function get_export_formats() {
-    return $this->export_formats;
   }
 
   /**
