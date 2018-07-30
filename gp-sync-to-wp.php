@@ -198,23 +198,24 @@ class GP_Sync_To_WP {
 
       $export_formats = $this->export_formats;
 
-      // Get the translations sets from the project ID.
+      // Get translations sets project
       $translation_sets = GP::$translation_set->by_project_id( $project->id );
 
       // Setup an array to use to track the file names we're creating.
       $files = array();
 
-      // Loop through all the sets.
+      //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
       foreach( $translation_sets as $set ) {
-              // Loop through all the formats we're exporting
-              foreach( $include_formats as $format ) {
-                      // Export the PO file for this translation set.
-                      $files[] .= $this->_export_to_file( $format, $path, $project, $set->locale, $set );
+
+              //error_log( print_r( $set , true ) );
+
+              // Loop through export formats
+              foreach( $export_formats as $format ) {
+
+                      // export format for translation set
+                      $files[] = $this->export_translation_to_file( $format, $project, $set );
               }
       }
-
-      //TODO: export language files (.po/.mo) to folder - according to project settings (#3)
-      error_log( 'sync wp - export ' . $project->slug );
 
       // redirect to project
       $route->redirect( gp_url_project( $project ) );
@@ -228,20 +229,31 @@ class GP_Sync_To_WP {
   /**
    * get the filename for export
    */
-  public function get_export_filename( $filename, $format, $locale, $project, $translation_set ) {
+  private function export_translation_to_file( $format, $project, $set ) {
 
-    //TODO: check setting - save to project (#4)
-    $save_to_project = $this->get_save_to_project();
+    // Get the entries we going to export.
+    $entries = GP::$translation->for_export( $project, $set );
 
-    if ( $save_to_project ) {
-      // save to project language folder - name: (locale)
-      $filename = $locale->wp_locale;
-    } else {
-      // save to wordpress language folder - name: (project_name)-(locale)
-      $filename = sprintf( '%1s-%2s', $project->slug, $locale->wp_locale );
-    }
+    // Get the format object to create the export with.
+    $format_obj = gp_array_get( GP::$formats, gp_get( 'format', $format ), null );
 
-    return sprintf( '%1s.%2s', $filename, $format->extension );
+    error_log( print_r( array( $set ), true ) );
+
+    // Apply any filters that other plugins may have implemented to the filename.
+    $filename = apply_filters( 'gp_export_translations_filename', $project->slug, $format_obj, $set->locale, $project, $set );
+
+    // Get the contents from the formatter.
+    $contents = $format_obj->print_exported_file( $project, $set->locale, $set, $entries );
+
+    $path = trailingslashit( $this->get_export_path( $project ) ) . $filename;
+
+    // Write the contents out to the file.
+    $fh = fopen( $path, 'w' );
+    fwrite( $fh, $contents );
+    fclose( $fh );
+
+    // Return the filename for future reference.
+    return $filename;
   }
 }
 
