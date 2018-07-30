@@ -196,10 +196,7 @@ class GP_Sync_To_WP {
 
     if ( $project ) {
 
-      $export_formats = array(
-         'po',
-         'mo'
-      );
+      $export_formats = $this->export_formats;
 
       // Get the translations sets from the project ID.
       $translation_sets = GP::$translation_set->by_project_id( $project->id );
